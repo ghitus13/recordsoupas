@@ -1,0 +1,192 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Record ou Non Record</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Renault+Life:wght@400;700&display=swap');
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to bottom right, #f6f8fa, #e5ecf5);
+      padding: 40px;
+      color: #2c3e50;
+    }
+    h1 {
+      text-align: center;
+      font-size: 3em;
+      color: #003057;
+    }
+    h2 {
+      text-align: center;
+      font-size: 1.3em;
+      font-weight: normal;
+      margin-top: -10px;
+      margin-bottom: 30px;
+      color: #555;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .question {
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .options button {
+      margin: 10px 5px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      background-color: #f0f0f0;
+      color: #333;
+      cursor: pointer;
+      font-family: Arial, sans-serif;
+      font-weight: normal;
+      transition: all 0.3s ease;
+    }
+    .options button.selected {
+      font-weight: bold;
+    }
+    .options button.oui.selected { background-color: #d4edda; color: #155724; }
+    .options button.non.selected { background-color: #f8d7da; color: #721c24; }
+    .options button.saispas.selected { background-color: #fff3cd; color: #856404; }
+
+    .synthesis-box {
+      margin-top: 30px;
+      border-radius: 10px;
+      padding: 20px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .btn {
+      margin-top: 20px;
+      padding: 12px 24px;
+      font-size: 1em;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .btn-green {
+      background-color: #2ecc71;
+      color: white;
+    }
+
+    .btn-blue {
+      background-color: #3498db;
+      color: white;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 12px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    .green { color: green; font-weight: bold; }
+    .orange { color: orange; font-weight: bold; }
+    .blue { color: #007BFF; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Record ou Non Record</h1>
+  <h2>Comment savoir si mon information est un record qui doit être conservé une fois l’activité terminée ?</h2>
+
+  <div class="card">
+    <label for="infoLabel"><strong>Libellé de l'information :</strong></label><br>
+    <textarea id="infoLabel" rows="2" style="width:100%;padding:10px;border-radius:8px;"></textarea>
+
+    <div class="question">1. Sa production est-elle prévue par la loi ou une réglementation, y compris interne ? Une autorité peut-elle nous le demander ?</div>
+    <div class="options">
+      <button class="oui" onclick="selectAnswer(0, 'Oui', this)">Oui</button>
+      <button class="non" onclick="selectAnswer(0, 'Non', this)">Non</button>
+      <button class="saispas" onclick="selectAnswer(0, 'Je ne sais pas', this)">Je ne sais pas</button>
+    </div>
+
+    <div class="question">2. Est-elle susceptible d’être utilisée pour défendre nos intérêts en justice ? Vous a-t-elle déjà été demandée par nos juristes ?</div>
+    <div class="options">
+      <button class="oui" onclick="selectAnswer(1, 'Oui', this)">Oui</button>
+      <button class="non" onclick="selectAnswer(1, 'Non', this)">Non</button>
+      <button class="saispas" onclick="selectAnswer(1, 'Je ne sais pas', this)">Je ne sais pas</button>
+    </div>
+
+    <div class="question">3. Est-elle indispensable pour de futures activités de l’entité (capitalisation), voire pour prendre des décisions stratégiques à terme ?</div>
+    <div class="options">
+      <button class="oui" onclick="selectAnswer(2, 'Oui', this)">Oui</button>
+      <button class="non" onclick="selectAnswer(2, 'Non', this)">Non</button>
+      <button class="saispas" onclick="selectAnswer(2, 'Je ne sais pas', this)">Je ne sais pas</button>
+    </div>
+
+    <div class="question">4. Est-ce que nous aurions des problèmes sérieux voire graves en cas de perte ?</div>
+    <div class="options">
+      <button class="oui" onclick="selectAnswer(3, 'Oui', this)">Oui</button>
+      <button class="non" onclick="selectAnswer(3, 'Non', this)">Non</button>
+      <button class="saispas" onclick="selectAnswer(3, 'Je ne sais pas', this)">Je ne sais pas</button>
+    </div>
+
+    <button class="btn btn-green" onclick="showSynthesis()">Afficher la synthèse</button>
+  </div>
+
+  <script>
+    const responses = [null, null, null, null];
+    const questions = [
+      "Sa production est-elle prévue par la loi ou une réglementation, y compris interne ? Une autorité peut-elle nous le demander ?",
+      "Est-elle susceptible d’être utilisée pour défendre nos intérêts en justice ? Vous a-t-elle déjà été demandée par nos juristes ?",
+      "Est-elle indispensable pour de futures activités de l’entité (capitalisation), voire pour prendre des décisions stratégiques à terme ?",
+      "Est-ce que nous aurions des problèmes sérieux voire graves en cas de perte ?"
+    ];
+
+    function selectAnswer(index, value, btn) {
+      responses[index] = value;
+      const parent = btn.parentElement;
+      Array.from(parent.children).forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    }
+
+    function showSynthesis() {
+      if (responses.includes(null)) {
+        alert("Merci de répondre à toutes les questions.");
+        return;
+      }
+
+      let resultHTML = "<h3>Votre synthèse :</h3><table><tr><th>#</th><th>Question</th><th>Réponse</th></tr>";
+      responses.forEach((rep, i) => {
+        resultHTML += `<tr><td>${i+1}</td><td>${questions[i]}</td><td><strong>${rep}</strong></td></tr>`;
+      });
+      resultHTML += "</table>";
+
+      const ouiCount = responses.filter(r => r === "Oui").length;
+      const nonCount = responses.filter(r => r === "Non").length;
+
+      if (ouiCount >= 1) {
+        resultHTML += "<p class='green'>C'est sans doute un record</p>";
+      } else if (nonCount === 4) {
+        resultHTML += "<p class='orange'>Ce n'est probablement pas un record</p>";
+      } else {
+        resultHTML += "<p class='blue'>Prenez contact avec l'équipe Records Management : records.management@renault.com</p>";
+      }
+
+      const newWindow = window.open("", "_blank", "width=800,height=700");
+      newWindow.document.write(`<html><head><title>Synthèse</title><style>body{font-family:Arial;padding:20px;}table{border-collapse:collapse;width:100%;}th,td{border:1px solid #ccc;padding:10px;text-align:left;}th{background-color:#f2f2f2;}h3{color:#003057}</style></head><body>${resultHTML}</body></html>`);
+      newWindow.document.close();
+    }
+  </script>
+</body>
+</html>
